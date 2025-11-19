@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>短链接管理面板</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #4f8cff;
+      --primary-light: #e7f0ff;
+      --danger: #ff4d4f;
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --text-main: #1f2933;
+      --text-sub: #6b7280;
+      --border-radius: 14px;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 24px 22px 26px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 650;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 20px 0 8px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .field {
+      flex: 1 1 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    input[type="text"],
+    input[type="url"] {
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #dde1ea;
+      font-size: 13px;
+      outline: none;
+      background: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.25);
+      background: #ffffff;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 8px 16px rgba(79, 140, 255, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: #3e76df;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: var(--text-sub);
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-outline:hover {
+      background: #f3f4f6;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f3f4ff;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    .result-box {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px dashed #d1d5db;
+      font-size: 13px;
+      max-height: 260px;
+      overflow: auto;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .result-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .result-item + .result-item {
+      margin-top: 6px;
+      border-top: 1px dashed #e5e7eb;
+      padding-top: 6px;
+    }
+
+    .result-key {
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .result-url {
+      word-break: break-all;
+      color: #2563eb;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--text-sub);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 18px 16px 20px;
+      }
+      .title {
+        font-size: 19px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div>
+          <div class="title">
+            短链接管理
+            <span class="title-badge">简洁 · 明亮 · 中文</span>
+          </div>
+          <div class="subtitle">
+            在这里创建、查询和删除短链接。所有操作只在当前 Worker 中生效。
+          </div>
+        </div>
+      </div>
+
+      <!-- 创建短链接 -->
+      <div class="section">
+        <div class="section-title">创建短链接</div>
+        <div class="form-row">
+          <div class="field">
+            <label for="long-url">原始链接（长链接）</label>
+            <input id="long-url" type="url" placeholder="例如：https://www.example.com/very/long/url" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="custom-key">自定义短链接（可选）</label>
+            <input id="custom-key" type="text" placeholder="例如：my-link，不填则自动生成" />
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="btn-row">
+              <button id="btn-add" class="btn-primary">
+                生成短链接
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="chip">
+          <span class="chip-dot"></span>
+          <span>如果启用了 unique_link，会复用相同长链接的短地址。</span>
+        </div>
+      </div>
+
+      <!-- 管理短链接 -->
+      <div class="section">
+        <div class="section-title">查询 / 删除短链接</div>
+        <div class="form-row">
+          <div class="field">
+            <label for="manage-key">短链接 Key</label>
+            <input id="manage-key" type="text" placeholder="例如：my-link 或 随机生成的 key" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button id="btn-qry" class="btn-outline">
+            查询短链接
+          </button>
+          <button id="btn-del" class="btn-danger">
+            删除短链接
+          </button>
+          <button id="btn-qryall" class="btn-outline">
+            查询全部（如已启用）
+          </button>
+        </div>
+      </div>
+
+      <!-- 结果展示 -->
+      <div class="section">
+        <div class="section-title">操作结果</div>
+        <div id="result-box" class="result-box">
+          <div class="result-title">还没有任何输出。</div>
+          <div>在这里可以看到 API 返回的数据和生成的短链接。</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div>
+          <span class="tag">当前语言：中文 UI</span>
+        </div>
+        <div>
+          Powered by Cloudflare Worker &amp; KV
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 密码占位符：Worker 会用真实 password 替换 __PASSWORD__ -->
+  <input type="hidden" id="worker-password" value="__PASSWORD__" />
+
+  <script>
+    const API_URL = window.location.origin; // 同域访问 Worker
+    const password = document.getElementById("worker-password").value;
+    const resultBox = document.getElementById("result-box");
+
+    function appendResult(text, isError = false) {
+      if (!text) return;
+      const time = new Date().toLocaleTimeString();
+      const content = `[${time}] ${text}`;
+      const div = document.createElement("div");
+      div.className = "result-item";
+      if (isError) {
+        div.style.color = "#b91c1c";
+      }
+      div.textContent = content;
+
+      if (resultBox.dataset.empty !== "0") {
+        resultBox.innerHTML = "";
+        resultBox.dataset.empty = "0";
+      }
+      resultBox.appendChild(div);
+      resultBox.scrollTop = resultBox.scrollHeight;
+    }
+
+    function showShortLink(key) {
+      const shortUrl = window.location.origin.replace(/\/+$/, "") + "/" + encodeURIComponent(key);
+      const wrapper = document.createElement("div");
+      wrapper.className = "result-item";
+
+      const label = document.createElement("div");
+      label.innerHTML = `<span class="result-key">短链接：</span>`;
+      const link = document.createElement("a");
+      link.href = shortUrl;
+      link.target = "_blank";
+      link.className = "result-url";
+      link.textContent = shortUrl;
+
+      label.appendChild(link);
+      wrapper.appendChild(label);
+
+      resultBox.appendChild(wrapper);
+      resultBox.scrollTop = resultBox.scrollHeight;
+    }
+
+    async function callApi(cmd, params) {
+      try {
+        const body = { cmd, password, ...params };
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        const text = await res.text();
+        let data = null;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          appendResult("解析返回数据失败：" + text, true);
+          return null;
+        }
+
+        if (data.error) {
+          appendResult(data.error, true);
+        } else {
+          appendResult("操作成功。");
+        }
+        return data;
+      } catch (err) {
+        appendResult("请求失败：" + err.message, true);
+        return null;
+      }
+    }
+
+    document.getElementById("btn-add").addEventListener("click", async () => {
+      const url = document.getElementById("long-url").value.trim();
+      const key = document.getElementById("custom-key").value.trim();
+
+      if (!url) {
+        appendResult("请先填写原始链接。", true);
+        return;
+      }
+
+      appendResult("正在创建短链接...");
+      const data = await callApi("add", { url, key });
+      if (data && data.status === 200 && data.key) {
+        showShortLink(data.key);
+      }
+    });
+
+    document.getElementById("btn-qry").addEventListener("click", async () => {
+      const key = document.getElementById("manage-key").value.trim();
+      if (!key) {
+        appendResult("请先填写要查询的短链接 Key。", true);
+        return;
+      }
+      appendResult("正在查询短链接...");
+      const data = await callApi("qry", { key });
+      if (data && data.status === 200 && data.url) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "result-item";
+        wrapper.innerHTML =
+          `<div><span class="result-key">Key：</span>${data.key}</div>` +
+          `<div><span class="result-key">原链接：</span><a class="result-url" href="${data.url}" target="_blank">${data.url}</a></div>`;
+        resultBox.appendChild(wrapper);
+        resultBox.scrollTop = resultBox.scrollHeight;
+      }
+    });
+
+    document.getElementById("btn-del").addEventListener("click", async () => {
+      const key = document.getElementById("manage-key").value.trim();
+      if (!key) {
+        appendResult("请先填写要删除的短链接 Key。", true);
+        return;
+      }
+      if (!confirm("确定要删除这个短链接吗？此操作不可恢复。")) return;
+
+      appendResult("正在删除短链接...");
+      const data = await callApi("del", { key });
+      if (data && data.status === 200) {
+        appendResult(`已删除短链接：${key}`);
+      }
+    });
+
+    document.getElementById("btn-qryall").addEventListener("click", async () => {
+      appendResult("正在查询全部 KV（如果已启用 load_kv）...");
+      const data = await callApi("qryall", {});
+      if (data && data.status === 200 && Array.isArray(data.kvlist)) {
+        const list = data.kvlist;
+        appendResult(`共获取到 ${list.length} 条记录。`);
+        list.forEach((item) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "result-item";
+          wrapper.innerHTML =
+            `<div><span class="result-key">Key：</span>${item.key}</div>` +
+            `<div><span class="result-key">值：</span><span class="result-url">${item.value}</span></div>`;
+          resultBox.appendChild(wrapper);
+        });
+        resultBox.scrollTop = resultBox.scrollHeight;
+      }
+    });
+
+    // 初始化结果框状态
+    resultBox.dataset.empty = "1";
+  </script>
+</body>
+</html>

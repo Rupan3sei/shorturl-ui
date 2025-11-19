@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>正在跳转...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #4f8cff;
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --text-main: #1f2933;
+      --text-sub: #6b7280;
+      --border-radius: 16px;
+      --shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+      background: radial-gradient(circle at top, #e3ecff 0, #f5f7fb 45%, #f5f7fb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--text-main);
+    }
+
+    .card {
+      max-width: 540px;
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 28px 24px 24px;
+      text-align: center;
+    }
+
+    .icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      background: #e7f0ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 26px;
+      color: var(--primary);
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 4px 0 6px;
+    }
+
+    .desc {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+    }
+
+    .link-box {
+      margin: 10px 0 18px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      font-size: 13px;
+      word-break: break-all;
+      text-align: left;
+    }
+
+    .link-box span {
+      font-weight: 600;
+      font-size: 13px;
+      color: #4b5563;
+    }
+
+    .link-box a {
+      display: block;
+      margin-top: 4px;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .link-box a:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--primary);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 12px 22px rgba(79, 140, 255, 0.35);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s;
+    }
+
+    .btn:hover {
+      background: #3e76df;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .tip {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-circle">↗</div>
+    <h1>正在为你打开链接</h1>
+    <p class="desc">
+      为了安全起见，我们先向你展示即将访问的目标地址。
+    </p>
+
+    <div class="link-box">
+      <span>目标链接：</span>
+      <!-- Worker 会用真正的链接替换 {__FINAL_LINK__} -->
+      <a id="final-link" href="{__FINAL_LINK__}" target="_blank" rel="noopener noreferrer">{__FINAL_LINK__}</a>
+    </div>
+
+    <button class="btn" id="btn-go">
+      立即前往
+    </button>
+
+    <div class="tip" id="auto-tip">将在 <span id="countdown">5</span> 秒后自动跳转...</div>
+  </div>
+
+  <script>
+    (function () {
+      var link = document.getElementById("final-link").href;
+      var btn = document.getElementById("btn-go");
+      var countdownEl = document.getElementById("countdown");
+      var seconds = 5;
+
+      btn.addEventListener("click", function () {
+        window.location.href = link;
+      });
+
+      var timer = setInterval(function () {
+        seconds -= 1;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          window.location.href = link;
+        } else {
+          countdownEl.textContent = seconds;
+        }
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>
