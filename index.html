@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <title>短链接管理面板</title>
+  <title>云端短链 · 管理面板</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
+  <meta name="theme-color" content="#4f8cff" />
+
   <style>
     :root {
       --primary: #4f8cff;
@@ -15,6 +21,29 @@
       --text-sub: #6b7280;
       --border-radius: 14px;
       --shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+      --input-bg: #f9fafb;
+      --border-color: #dde1ea;
+      --chip-bg: #f3f4ff;
+      --result-bg: #f9fafb;
+      --result-border: #d1d5db;
+    }
+
+    /* 深色主题变量覆盖 */
+    [data-theme="dark"] {
+      --primary: #60a5fa;
+      --primary-light: #1e293b;
+      --danger: #fb7185;
+      --bg: #020617;
+      --card-bg: #020617;
+      --text-main: #e5e7eb;
+      --text-sub: #9ca3af;
+      --border-radius: 14px;
+      --shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
+      --input-bg: #020617;
+      --border-color: #1f2937;
+      --chip-bg: #0b1120;
+      --result-bg: #020617;
+      --result-border: #1f2937;
     }
 
     * {
@@ -23,9 +52,11 @@
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
       background: var(--bg);
       color: var(--text-main);
+      transition: background 0.25s ease, color 0.25s ease;
     }
 
     .container {
@@ -39,6 +70,8 @@
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
       padding: 24px 22px 26px;
+      transition: background 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid rgba(148, 163, 184, 0.25);
     }
 
     .header {
@@ -46,6 +79,22 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      object-fit: contain;
+      background: var(--primary-light);
+      padding: 4px;
     }
 
     .title {
@@ -68,7 +117,33 @@
     .subtitle {
       font-size: 13px;
       color: var(--text-sub);
-      margin-bottom: 20px;
+      margin-top: 2px;
+    }
+
+    .theme-toggle-btn {
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      background: transparent;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: var(--text-sub);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+        transform 0.1s ease, box-shadow 0.1s ease;
+      box-shadow: 0 6px 12px rgba(15, 23, 42, 0.12);
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .theme-toggle-btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
     }
 
     .section-title {
@@ -100,18 +175,20 @@
     input[type="url"] {
       padding: 8px 10px;
       border-radius: 999px;
-      border: 1px solid #dde1ea;
+      border: 1px solid var(--border-color);
       font-size: 13px;
       outline: none;
-      background: #f9fafb;
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      background: var(--input-bg);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s,
+        color 0.2s;
+      color: var(--text-main);
     }
 
     input[type="text"]:focus,
     input[type="url"]:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.25);
-      background: #ffffff;
+      background: var(--card-bg);
     }
 
     .btn-row {
@@ -131,7 +208,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s;
+      transition: transform 0.1s ease, box-shadow 0.1s ease,
+        background 0.2s ease, color 0.2s ease;
     }
 
     button:active {
@@ -149,19 +227,25 @@
       background: #3e76df;
     }
 
+    [data-theme="dark"] .btn-primary:hover {
+      background: #2563eb;
+    }
+
     .btn-outline {
-      background: #ffffff;
+      background: transparent;
       color: var(--text-sub);
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border-color);
     }
 
     .btn-outline:hover {
-      background: #f3f4f6;
+      background: var(--primary-light);
+      color: var(--primary);
     }
 
     .btn-danger {
       background: var(--danger);
       color: #ffffff;
+      box-shadow: 0 8px 16px rgba(248, 113, 113, 0.35);
     }
 
     .chip {
@@ -171,7 +255,7 @@
       font-size: 12px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: #f3f4ff;
+      background: var(--chip-bg);
       color: var(--text-sub);
       margin-top: 6px;
     }
@@ -187,13 +271,14 @@
       margin-top: 18px;
       padding: 12px 14px;
       border-radius: 10px;
-      background: #f9fafb;
-      border: 1px dashed #d1d5db;
+      background: var(--result-bg);
+      border: 1px dashed var(--result-border);
       font-size: 13px;
       max-height: 260px;
       overflow: auto;
       white-space: pre-wrap;
       line-height: 1.6;
+      transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .result-title {
@@ -203,18 +288,22 @@
 
     .result-item + .result-item {
       margin-top: 6px;
-      border-top: 1px dashed #e5e7eb;
+      border-top: 1px dashed var(--result-border);
       padding-top: 6px;
     }
 
     .result-key {
       font-weight: 600;
-      color: #111827;
+      color: var(--text-main);
     }
 
     .result-url {
       word-break: break-all;
       color: #2563eb;
+    }
+
+    [data-theme="dark"] .result-url {
+      color: #60a5fa;
     }
 
     .footer {
@@ -243,12 +332,21 @@
       background: #f3f4f6;
     }
 
+    [data-theme="dark"] .tag {
+      background: #020617;
+      border: 1px solid #1f2937;
+    }
+
     @media (max-width: 600px) {
       .card {
         padding: 18px 16px 20px;
       }
       .title {
         font-size: 19px;
+      }
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -257,15 +355,23 @@
   <div class="container">
     <div class="card">
       <div class="header">
-        <div>
-          <div class="title">
-            短链接管理
-            <span class="title-badge">简洁 · 明亮 · 中文</span>
-          </div>
-          <div class="subtitle">
-            在这里创建、查询和删除短链接。所有操作只在当前 Worker 中生效。
+        <div class="logo-wrap">
+          <img src="./assets/logo.png" alt="云端短链 Logo" class="logo-img" />
+          <div>
+            <div class="title">
+              云端短链
+              <span class="title-badge">简洁 · 明亮 · 深色可切换</span>
+            </div>
+            <div class="subtitle">
+              生成、查询和管理你的短链接。前端纯静态，可直接部署到 GitHub
+              Pages。
+            </div>
           </div>
         </div>
+        <button id="theme-toggle" class="theme-toggle-btn" type="button">
+          <span id="theme-icon">🌞</span>
+          <span id="theme-text">浅色模式</span>
+        </button>
       </div>
 
       <!-- 创建短链接 -->
@@ -274,18 +380,26 @@
         <div class="form-row">
           <div class="field">
             <label for="long-url">原始链接（长链接）</label>
-            <input id="long-url" type="url" placeholder="例如：https://www.example.com/very/long/url" />
+            <input
+              id="long-url"
+              type="url"
+              placeholder="例如：https://www.example.com/very/long/url"
+            />
           </div>
         </div>
         <div class="form-row">
           <div class="field">
             <label for="custom-key">自定义短链接（可选）</label>
-            <input id="custom-key" type="text" placeholder="例如：my-link，不填则自动生成" />
+            <input
+              id="custom-key"
+              type="text"
+              placeholder="例如：my-link，不填则自动生成"
+            />
           </div>
           <div class="field">
             <label>&nbsp;</label>
             <div class="btn-row">
-              <button id="btn-add" class="btn-primary">
+              <button id="btn-add" class="btn-primary" type="button">
                 生成短链接
               </button>
             </div>
@@ -303,17 +417,21 @@
         <div class="form-row">
           <div class="field">
             <label for="manage-key">短链接 Key</label>
-            <input id="manage-key" type="text" placeholder="例如：my-link 或 随机生成的 key" />
+            <input
+              id="manage-key"
+              type="text"
+              placeholder="例如：my-link 或 随机生成的 key"
+            />
           </div>
         </div>
         <div class="btn-row">
-          <button id="btn-qry" class="btn-outline">
+          <button id="btn-qry" class="btn-outline" type="button">
             查询短链接
           </button>
-          <button id="btn-del" class="btn-danger">
+          <button id="btn-del" class="btn-danger" type="button">
             删除短链接
           </button>
-          <button id="btn-qryall" class="btn-outline">
+          <button id="btn-qryall" class="btn-outline" type="button">
             查询全部（如已启用）
           </button>
         </div>
@@ -332,18 +450,54 @@
         <div>
           <span class="tag">当前语言：中文 UI</span>
         </div>
-        <div>
-          Powered by Cloudflare Worker &amp; KV
-        </div>
+        <div>Powered by Cloudflare Worker &amp; KV</div>
       </div>
     </div>
   </div>
 
-  <!-- 密码占位符：Worker 会用真实 password 替换 __PASSWORD__ -->
+  <!-- Worker 会把 __PASSWORD__ 替换成真正的密码 -->
   <input type="hidden" id="worker-password" value="__PASSWORD__" />
 
   <script>
-    const API_URL = window.location.origin; // 同域访问 Worker
+    // 主题切换逻辑
+    (function () {
+      const root = document.documentElement;
+      const toggleBtn = document.getElementById("theme-toggle");
+      const iconSpan = document.getElementById("theme-icon");
+      const textSpan = document.getElementById("theme-text");
+
+      function applyTheme(theme) {
+        root.setAttribute("data-theme", theme);
+        if (theme === "dark") {
+          iconSpan.textContent = "🌙";
+          textSpan.textContent = "深色模式";
+        } else {
+          iconSpan.textContent = "🌞";
+          textSpan.textContent = "浅色模式";
+        }
+      }
+
+      // 初始值：localStorage > 系统偏好 > 默认 light
+      const stored = localStorage.getItem("theme");
+      if (stored === "dark" || stored === "light") {
+        applyTheme(stored);
+      } else if (window.matchMedia &&
+                 window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        applyTheme("dark");
+      } else {
+        applyTheme("light");
+      }
+
+      toggleBtn.addEventListener("click", () => {
+        const current = root.getAttribute("data-theme") || "light";
+        const next = current === "light" ? "dark" : "light";
+        applyTheme(next);
+        localStorage.setItem("theme", next);
+      });
+    })();
+
+    // 原有 API 调用逻辑（略有精简）
+    const API_URL = window.location.origin;
     const password = document.getElementById("worker-password").value;
     const resultBox = document.getElementById("result-box");
 
@@ -356,18 +510,20 @@
       if (isError) {
         div.style.color = "#b91c1c";
       }
-      div.textContent = content;
-
       if (resultBox.dataset.empty !== "0") {
         resultBox.innerHTML = "";
         resultBox.dataset.empty = "0";
       }
+      div.textContent = content;
       resultBox.appendChild(div);
       resultBox.scrollTop = resultBox.scrollHeight;
     }
 
     function showShortLink(key) {
-      const shortUrl = window.location.origin.replace(/\/+$/, "") + "/" + encodeURIComponent(key);
+      const shortUrl =
+        window.location.origin.replace(/\/+$/, "") +
+        "/" +
+        encodeURIComponent(key);
       const wrapper = document.createElement("div");
       wrapper.className = "result-item";
 
@@ -484,7 +640,6 @@
       }
     });
 
-    // 初始化结果框状态
     resultBox.dataset.empty = "1";
   </script>
 </body>
